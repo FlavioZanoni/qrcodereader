@@ -89,6 +89,7 @@ export const Scanner: React.FC<ScannerProps> = ({
         setCropped(img);
         return;
       }
+      return
 
       await cropBase64ImageWithAspectRatio(img, 16, 6).then(
         (newImg: string) => {

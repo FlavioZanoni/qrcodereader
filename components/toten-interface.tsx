@@ -13,6 +13,8 @@ export function TotenInterface({ storeName = "Loja do Edipo", logoUrl = "/placeh
 
   const handleQRCodeScan = (value: string) => {
     setMessage(`QR Code lido com sucesso. Presença registrada! Valor: ${value}`)
+    window.alert(`QR Code lido com sucesso. Presença registrada! Valor: ${value}`)
+    window.navigator.vibrate(200)
   }
 
   const handleCIMSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -35,7 +37,7 @@ export function TotenInterface({ storeName = "Loja do Edipo", logoUrl = "/placeh
             <h1 className="text-2xl font-bold">{storeName}</h1>
           </div>
           <div className="text-right">
-            <p className="font-semibold">{sessionType}</p>
+            <p className="font-semibold text-sm">{sessionType}</p>
             <p>{sessionDate}</p>
           </div>
         </div>
