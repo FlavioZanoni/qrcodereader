@@ -1,19 +1,32 @@
-'use client'
+"use client"
 
-import { useState } from 'react'
+import { useState } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Scanner } from './Scanner'
-import { UserPlus } from 'lucide-react'
+import { Scanner } from "./Scanner"
+import { UserPlus } from "lucide-react"
 
-export function TotenInterface({ storeName = "Loja do Edipo", logoUrl = "/placeholder.svg?height=50&width=50", sessionType = "Sessão Regular", sessionDate = new Date().toLocaleDateString() }) {
+export function TotenInterface({
+  storeName = "Loja do Edipo",
+  logoUrl = "/placeholder.svg?height=50&width=50",
+  sessionType = "Sessão Regular",
+  sessionDate = new Date().toLocaleDateString(),
+}) {
   const [message, setMessage] = useState("")
 
   const handleQRCodeScan = (value: string) => {
     setMessage(`QR Code lido com sucesso. Presença registrada! Valor: ${value}`)
-    window.alert(`QR Code lido com sucesso. Presença registrada! Valor: ${value}`)
+    window.alert(
+      `QR Code lido com sucesso. Presença registrada! Valor: ${value}`
+    )
     window.navigator.vibrate(200)
   }
 
@@ -53,10 +66,12 @@ export function TotenInterface({ storeName = "Loja do Edipo", logoUrl = "/placeh
             <Card>
               <CardHeader>
                 <CardTitle>Leitura de QR Code</CardTitle>
-                <CardDescription>Aponte a câmera para o QR Code para registrar presença</CardDescription>
+                <CardDescription>
+                  Aponte a câmera para o QR Code para registrar presença
+                </CardDescription>
               </CardHeader>
               <CardContent className="flex w-full h-full">
-                <Scanner setScanValue={handleQRCodeScan} />
+                <Scanner codeType="qr" setScanValue={handleQRCodeScan} />
               </CardContent>
             </Card>
             <hr className="my-4" />
@@ -64,12 +79,16 @@ export function TotenInterface({ storeName = "Loja do Edipo", logoUrl = "/placeh
             <Card>
               <CardHeader>
                 <CardTitle>CIM ou Token NFC</CardTitle>
-                <CardDescription>Digite seu CIM ou aproxime o token NFC</CardDescription>
+                <CardDescription>
+                  Digite seu CIM ou aproxime o token NFC
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleCIMSubmit} className="space-y-4">
                   <Input type="text" placeholder="Digite seu CIM" />
-                  <Button type="submit" className="w-full">Registrar com CIM</Button>
+                  <Button type="submit" className="w-full">
+                    Registrar com CIM
+                  </Button>
                 </form>
               </CardContent>
             </Card>
@@ -79,10 +98,15 @@ export function TotenInterface({ storeName = "Loja do Edipo", logoUrl = "/placeh
             <Card>
               <CardHeader>
                 <CardTitle>Novo Cadastro</CardTitle>
-                <CardDescription>Preencha os dados para se cadastrar</CardDescription>
+                <CardDescription>
+                  Preencha os dados para se cadastrar
+                </CardDescription>
               </CardHeader>
               <CardContent>
-                <form onSubmit={handleNewUserRegistration} className="space-y-4">
+                <form
+                  onSubmit={handleNewUserRegistration}
+                  className="space-y-4"
+                >
                   <Input type="text" placeholder="Nome completo" />
                   <Input type="email" placeholder="E-mail" />
                   <Input type="tel" placeholder="Telefone" />

@@ -1,16 +1,9 @@
-'use client';
-import React, { useEffect, useRef, useState } from 'react';
+"use client"
+import React, { useEffect, useRef, useState } from "react"
 
-import { BrowserMultiFormatReader } from '@zxing/library';
-import Webcam, { WebcamProps } from 'react-webcam';
-import { Card } from './ui/card';
-
-const videoConstraints: WebcamProps['videoConstraints'] = {
-  width: 1920,
-  height: 1080,
-  facingMode: 'enviroment',
-  noiseSuppression: true,
-};
+import { BrowserMultiFormatReader } from "@zxing/library"
+import Webcam, { WebcamProps } from "react-webcam"
+import { Card } from "./ui/card"
 
 /**
  *
@@ -27,109 +20,124 @@ const videoConstraints: WebcamProps['videoConstraints'] = {
  */
 
 interface ScannerProps {
-  scanRate?: number;
-  codeType?: string;
-  setScanValue: (value: string) => void;
-  showCropped?: boolean;
-  children?: React.ReactNode;
+  scanRate?: number
+  codeType?: string
+  setScanValue: (value: string) => void
+  showCropped?: boolean
+  children?: React.ReactNode
+}
+const videoConstraints: WebcamProps["videoConstraints"] = {
+  facingMode: "enviroment",
 }
 
 export const Scanner: React.FC<ScannerProps> = ({
-  scanRate = 10,
+  scanRate = 100,
   setScanValue,
-  codeType,
+  codeType = "qr",
   showCropped,
   children,
 }) => {
-  const [noWebCam, setNoWebCam] = useState(false);
-  const [stopScan, setStopScan] = useState(false);
-  const [cropped, setCropped] = useState('');
-
-  const reader = new BrowserMultiFormatReader();
-  const camRef = useRef<Webcam>(null);
+  const [noWebCam, setNoWebCam] = useState(false)
+  const [stopScan, setStopScan] = useState(false)
+  const [cropped, setCropped] = useState("")
+  const reader = new BrowserMultiFormatReader()
+  const camRef = useRef<Webcam>(null)
   useEffect(() => {
-    if (!cropped) return;
-    if (stopScan) return;
+    if (!cropped) return
+    if (stopScan) return
     reader
-      .decodeFromImage('', cropped)
+      .decodeFromImage("", cropped)
       .then((result) => {
-        setStopScan(true);
-        setScanValue(result.getText());
-        window.navigator.vibrate(200);
+        setStopScan(true)
+        setScanValue(result.getText())
+        window.navigator.vibrate(200)
       })
       // eslint-disable-next-line @typescript-eslint/no-empty-function
-      .catch(() => { });
-  }, [cropped]);
+      .catch(() => {})
+  }, [cropped])
 
   const HandleNoWebcam = () => {
     if (noWebCam) {
       return (
-        <div
-        >
-          Não foi possível acessar a câmera, verifique se está conectada e
-          tente novamente.
-
+        <div>
+          Não foi possível acessar a câmera, verifique se está conectada e tente
+          novamente.
         </div>
-      );
+      )
     }
     return null
-  };
+  }
+
+  const [deviceId, setDeviceId] = React.useState({})
+
+  const handleDevices = React.useCallback(
+    (mediaDevices) => {
+      setDeviceId(
+        mediaDevices.filter(({ kind }) => kind === "videoinput")[0].deviceId
+      )
+    },
+    [setDeviceId]
+  )
+
+  React.useEffect(() => {
+    navigator.mediaDevices.enumerateDevices().then(handleDevices)
+  }, [handleDevices])
 
   const handleDecode = async () => {
     const int = setInterval(async () => {
-      const img = camRef?.current?.getScreenshot() as string;
-      if (!img) return;
+      const img = camRef?.current?.getScreenshot() as string
+      if (!img) return
 
       if (stopScan) {
-        clearInterval(int);
-        return;
+        clearInterval(int)
+        return
       }
 
-      if (codeType === 'qr') {
-        setCropped(img);
-        return;
+      if (codeType === "qr") {
+        setCropped(img)
+        return
       }
       return
 
       await cropBase64ImageWithAspectRatio(img, 16, 6).then(
         (newImg: string) => {
-          setCropped(newImg);
+          setCropped(newImg)
         }
-      );
-    }, 1000 / scanRate);
-  };
+      )
+    }, 1000 / scanRate)
+  }
 
   return (
     <>
-      <Card
-        className='w-full h-full min-h-96'
-      >
-        <div
-        >
-          <Webcam
-            ref={camRef}
-            reversed={true}
-            audio={false}
-            screenshotFormat='image/jpeg'
-            videoConstraints={{ ...videoConstraints }}
-            onUserMediaError={() => {
-              setNoWebCam(true);
-            }}
-            onUserMedia={() => {
-              if (!noWebCam && !stopScan) {
-                handleDecode();
-              }
-            }}
-            style={{
-              display: noWebCam || showCropped ? 'none' : 'block',
-            }}
-          />
-          {showCropped && cropped && <img src={cropped || ''} alt='crop' />}
+      <Card className="w-full h-full min-h-96">
+        <div>
+          {deviceId && (
+            <Webcam
+              ref={camRef}
+              reversed={true}
+              audio={false}
+              screenshotFormat="image/jpeg"
+              videoConstraints={{ deviceId: deviceId }}
+              onUserMediaError={(e) => {
+                console.log(e)
+              }}
+              onUserMedia={(e) => {
+                console.log("userMedia", e)
+                if (!noWebCam && !stopScan) {
+                  handleDecode()
+                }
+              }}
+              style={{
+                display: noWebCam || showCropped ? "none" : "block",
+              }}
+            />
+          )}
+          {showCropped && cropped && <img src={cropped || ""} alt="crop" />}
         </div>
 
         <HandleNoWebcam />
       </Card>
       {children}
     </>
-  );
-};
+  )
+}
